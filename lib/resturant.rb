@@ -32,7 +32,7 @@ class Resturant
 
   end
 
-  def self.build_from_questions    
+  def self.build_using_questions    
     args = {}
     print "Resturant Name:"
     args[:name] = gets.chomp.strip
@@ -47,13 +47,28 @@ class Resturant
   end
 
   def self.saved_resturants
+    resturants = []
+    if file_usable?
+      file = File.new(@@filepath, 'r')
+      file.each_line do |line|
 
+        resturants << Resturant.new.import_line(line.chomp)
+      end
+      file.close
+    end
+    return resturants
   end
 
   def initialize(args={})
     @name    = args[:name]    || ""
     @cuisine = args[:cuisine] || ""
     @price   = args[:price]   || ""
+  end
+
+  def import_line(line)
+    line_array = line.split("\t")
+    @name, @cuisine, @price = line_array
+    return self
   end
 
   def save

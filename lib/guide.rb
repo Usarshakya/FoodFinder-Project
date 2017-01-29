@@ -49,7 +49,7 @@ class Guide
   def do_action(action)
     case action
     when 'list'
-      puts "Listing.."
+      list
     when 'find'
       puts "Finding..."
     when 'add'
@@ -68,6 +68,14 @@ class Guide
       puts "\nResturant Added\n\n"
     else
       puts "\nSave Error: Resturant not Added"
+    end
+  end
+
+  def list
+     puts "\nListing Resturants\n\n".upcase
+     resturants = Resturant.saved_resturants  
+     resturants.each do |rest|
+      puts rest.name + "|" + rest.cuisine + "|" +rest.price 
     end
   end
 
