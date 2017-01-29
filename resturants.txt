@@ -1,1 +1,2 @@
 fruzone	Mexican	2500
+LAVAZZA	Expresso	250

@@ -32,8 +32,28 @@ class Resturant
 
   end
 
+  def self.build_from_questions    
+    args = {}
+    print "Resturant Name:"
+    args[:name] = gets.chomp.strip
+
+    print "Cuisine Type:"
+    args[:cuisine] = gets.chomp.strip
+
+    print "Average Price:"
+    args[:price] = gets.chomp.strip
+
+    return self.new(args)
+  end
+
   def self.saved_resturants
 
+  end
+
+  def initialize(args={})
+    @name    = args[:name]    || ""
+    @cuisine = args[:cuisine] || ""
+    @price   = args[:price]   || ""
   end
 
   def save
