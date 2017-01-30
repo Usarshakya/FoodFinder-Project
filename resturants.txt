@@ -1,2 +1,3 @@
 fruzone	Mexican	2500
 LAVAZZA	Expresso	250
+fire wood	italino	2500

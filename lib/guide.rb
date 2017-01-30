@@ -28,8 +28,8 @@ class Guide
     #action loop
     result = nil
     until result == :quit
-      action = get_action     
-      result = do_action(action)
+      action, args = get_action     
+      result = do_action(action, args)
     end
     conclusion
   end
@@ -41,17 +41,20 @@ class Guide
       puts "Actions :" + Guide::Config.actions.join(", ") if action
       print ">"
       user_response = gets.chomp
-      action = user_response.downcase.strip
-      return action
+      args = user_response.downcase.strip.split(' ')
+      action=args.shift
     end
+      return action, args
   end
+  
 
-  def do_action(action)
+  def do_action(action, args=[])
     case action
     when 'list'
-      list
+      list(args)
     when 'find'
-      puts "Finding..."
+      keyword =args.shift
+      find(keyword)
     when 'add'
       add
     when 'quit'
@@ -71,11 +74,39 @@ class Guide
     end
   end
 
-  def list
-     puts "\nListing Resturants\n\n".upcase
-     resturants = Resturant.saved_resturants  
-     resturants.each do |rest|
-      puts rest.name + "|" + rest.cuisine + "|" +rest.price 
+  def list(args=[])
+    sort_order = args.shift
+    sort_order ||= "name"
+    sort_order = "name" unless ['name','cuisine','price'].include?(sort_order)
+
+    puts "\nListing Resturants\n\n".upcase
+    resturants = Resturant.saved_resturants 
+    resturants.sort! do |r1, r2|
+      case sort_order
+      when 'name'
+        r1.name.downcase <=>r2.name.downcase
+      when 'cuisine'
+        r1.cuisine.downcase <=>r2.cuisine.downcase
+      when 'price'
+        r1.price.to_i <=>r2.price.to_i
+      end
+    end 
+    output_resturant_table(resturants)
+    puts "Sort using :'list cuisine'\n\n"
+  end
+
+  def find(keyword="")
+    puts "\nFind a Resturants\n\n".upcase
+    if keyword
+      resturants = Resturant.saved_resturants
+      found = resturants.select do |rest|
+        rest.name.downcase.include?(keyword.downcase) || 
+        rest.cuisine.downcase.include?(keyword.downcase) || rest.price.to_i <= keyword.to_i
+      end
+      output_resturant_table(found)
+    else
+      puts "Find using a key phrase to search a resturant list"
+      puts "Examples: 'find lavazza','find expesso'\n\n"
     end
   end
 
@@ -86,6 +117,21 @@ class Guide
 
   def conclusion
     puts "\n<<<GUDBYE>>>\n\n\n"
+  end
+
+  def output_resturant_table(resturants=[])
+    print " " + "Name".ljust(30)
+    print " " + "Cuisine".ljust(20)
+    print " " + "Price".rjust(6) + "\n"
+    puts "-" *60
+    resturants.each do |rest|
+      line = " " << rest.name.ljust(30)
+      line << " " + rest.cuisine.ljust(20)
+      line << " " + rest.formatted_price.rjust(6)
+      puts line
+    end
+    puts "NO listings found" if resturants.empty?
+    puts "-" * 60
   end
 
 end
